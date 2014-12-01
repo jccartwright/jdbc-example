@@ -1,20 +1,20 @@
 package hello
 
-import org.springframework.stereotype.Controller
+//import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.context.request.WebRequest
+//import org.springframework.web.context.request.WebRequest
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus
-import org.apache.log4j.Logger
-import groovy.util.logging.Log4j
-import groovy.json.*
+//import org.springframework.http.HttpStatus
+//import org.apache.log4j.Logger
+//import groovy.util.logging.Log4j
+//import groovy.json.*
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+//import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
@@ -29,15 +29,19 @@ class CityController {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    @Value( '${sample.property}' )
+    String stringTemplate
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(HttpServletResponse response) {
         response.setHeader("X-Frame-Options", "SAMEORIGIN")
-        return "Sample Webapp"
+        log.info 'inside index method...'
+        return String.format(stringTemplate, 'world')
     }
 
     @RequestMapping(value = "/cities", method = RequestMethod.GET)
     public List list(HttpServletResponse response) {
-        log.info 'inside list method...'
+
         List<City> results = jdbcTemplate.query(
             "select * from cities",
             new RowMapper<City>() {
