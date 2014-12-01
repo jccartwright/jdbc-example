@@ -23,14 +23,8 @@ import javax.servlet.http.HttpServletResponse
 
 @RestController
 class CityController {
-    private final JdbcTemplate jdbcTemplate;
-
     @Autowired
-    public CityController (JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-
-        assert jdbcTemplate != null
-    }
+    JdbcTemplate jdbcTemplate;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(HttpServletResponse response) {
