@@ -20,7 +20,10 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletResponse
+import groovy.util.logging.Slf4j
 
+// Use annotation to inject log field into the class.
+@Slf4j
 @RestController
 class CityController {
     @Autowired
@@ -34,7 +37,7 @@ class CityController {
 
     @RequestMapping(value = "/cities", method = RequestMethod.GET)
     public List list(HttpServletResponse response) {
-
+        log.info 'inside list method...'
         List<City> results = jdbcTemplate.query(
             "select * from cities",
             new RowMapper<City>() {
@@ -43,7 +46,6 @@ class CityController {
                     return new City(id: rs.getInt("gid"), name: rs.getString("name"));
                 }
             });
-        response.setHeader("X-Frame-Options", "SAMEORIGIN")
         return results
     }
 
