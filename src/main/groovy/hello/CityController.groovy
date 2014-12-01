@@ -21,6 +21,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.servlet.http.HttpServletResponse
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpStatus
+import groovy.json.*
+import org.springframework.http.MediaType
+
 
 // Use annotation to inject log field into the class.
 @Slf4j
@@ -39,7 +43,7 @@ class CityController {
         return String.format(stringTemplate, 'world')
     }
 
-    @RequestMapping(value = "/cities", method = RequestMethod.GET)
+    @RequestMapping(value = "/cities", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List list(HttpServletResponse response) {
 
         List<City> results = jdbcTemplate.query(
@@ -65,10 +69,33 @@ class CityController {
                         return new City(id: rs.getInt("gid"), name: rs.getString("name"));
                     }
                 });
-
+        if (results.size() == 0) {
+            log.warn("city name ${name} not found")
+            throw new NotFoundException(name)
+        }
         return results
     }
 
+    class NotFoundException extends RuntimeException {
+        public NotFoundException(String cityName) {
+            super("could not find city '" + cityName + "'.");
+        }
+    }
+
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    def handleException(NotFoundException e) {
+        log.error(e.message)
+        return ["error": e.getMessage()]
+    }
+
+
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    def handleException(Exception e) {
+        log.error(e.message)
+        return ["error": "an error occurred on the server"]
+    }
 }
 
 
